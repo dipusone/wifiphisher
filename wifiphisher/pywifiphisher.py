@@ -152,6 +152,11 @@ def parse_args():
 
     parser.add_argument("-dP", "--data_path",
                         help="Search for phishing pages in this location")
+    parser.add_argument(
+        "-dns",
+        "--dns_path",
+        help="the full path+filename for the dnsmasq.conf file",
+        default='/tmp/dnsmasq.conf')
 
     return parser.parse_args()
 
@@ -304,7 +309,10 @@ class WifiphisherEngine:
             if args.data_path[-1] != os.path.sep:
                 args.data_path += os.path.sep
             PHISHING_PAGES_DIR = args.data_path
+            logger.info("Searching for scenario in %s" % PHISHING_PAGES_DIR)
 
+        if args.dns_path:
+            self.access_point.DNS_PATH = args.dns_path
 
         # Initialize the operation mode manager
         self.opmode.initialize(args)
