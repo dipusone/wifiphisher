@@ -58,7 +58,7 @@ def parse_args():
     parser.add_argument(
         "-nK",
         "--nokillnetoworkmanager",
-        default='store_true',
+        action='store_true',
         help=("Do not kill NetworkManager"))
     parser.add_argument(
         "-nE",
