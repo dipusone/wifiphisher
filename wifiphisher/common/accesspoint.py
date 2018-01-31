@@ -9,6 +9,9 @@ from roguehostapd import hostapd_constants
 import wifiphisher.common.constants as constants
 
 
+DNS_PATH = '/etc/dnsmasq.conf'
+
+
 class AccessPoint(object):
     """
     This class forks the softAP
@@ -137,10 +140,10 @@ class AccessPoint(object):
 
         config = ('no-resolv\n' 'interface=%s\n' 'dhcp-range=%s\n')
 
-        with open('/tmp/dhcpd.conf', 'w') as dhcpconf:
+        with open(DNS_PATH, 'w') as dhcpconf:
             dhcpconf.write(config % (self.interface, constants.DHCP_LEASE))
 
-        with open('/tmp/dhcpd.conf', 'a+') as dhcpconf:
+        with open(DNS_PATH, 'a+') as dhcpconf:
             if self.internet_interface:
                 dhcpconf.write("server=%s" % (constants.PUBLIC_DNS, ))
             else:
@@ -148,7 +151,7 @@ class AccessPoint(object):
         # catch the exception if dnsmasq is not installed
         try:
             subprocess.Popen(
-                ['dnsmasq', '-C', '/tmp/dhcpd.conf'],
+                ['dnsmasq', '-C', DNS_PATH],
                 stdout=subprocess.PIPE,
                 stderr=constants.DN)
         except OSError:

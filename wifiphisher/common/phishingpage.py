@@ -283,7 +283,7 @@ class PhishingTemplate(object):
 class TemplateManager(object):
     """ This class handles all the template management operations """
 
-    def __init__(self):
+    def __init__(self, data_pages=None):
         """
         Construct object.
 
@@ -294,6 +294,9 @@ class TemplateManager(object):
         """
 
         # setup the templates
+
+        if data_pages:
+            constants.PHISHING_PAGES_DIR = data_pages
         self._template_directory = constants.PHISHING_PAGES_DIR
 
         page_dirs = os.listdir(constants.PHISHING_PAGES_DIR)

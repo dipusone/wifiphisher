@@ -56,6 +56,11 @@ def parse_args():
         help=("Choose an interface that is connected on the Internet" +
               "Example: -iI ppp0"))
     parser.add_argument(
+        "-nK",
+        "--nokillnetoworkmanager",
+        default='store_true',
+        help=("Do not kill NetworkManager"))
+    parser.add_argument(
         "-nE",
         "--noextensions",
         help=("Do not load any extensions."),
@@ -144,6 +149,9 @@ def parse_args():
         "--known-beacons",
         help="Broadcast a number of beacon frames advertising popular WLANs",
         action='store_true')
+
+    parser.add_argument("-dP", "--data_path",
+                        help="Search for phishing pages in this location")
 
     return parser.parse_args()
 
@@ -292,6 +300,12 @@ class WifiphisherEngine:
         # setup the logging configuration
         setup_logging(args)
 
+        if args.data_path:
+            if args.data_path[-1] != os.path.sep:
+                args.data_path += os.path.sep
+            PHISHING_PAGES_DIR = args.data_path
+
+
         # Initialize the operation mode manager
         self.opmode.initialize(args)
         # Set operation mode
@@ -396,7 +410,7 @@ class WifiphisherEngine:
             time.sleep(1)
             self.stop()
 
-        if not args.internetinterface:
+        if not args.internetinterface and not args.nokillnetoworkmanager:
             kill_interfering_procs()
             logger.info("Killing all interfering processes")
 
@@ -451,7 +465,7 @@ class WifiphisherEngine:
             else:
                 self.stop()
         # create a template manager object
-        self.template_manager = phishingpage.TemplateManager()
+        self.template_manager = phishingpage.TemplateManager(data_pages=args.data_path)
         # get the correct template
         tui_template_obj = tui.TuiTemplateSelection()
         template = tui_template_obj.gather_info(args.phishingscenario,
